@@ -18,7 +18,6 @@ class UserAccount extends dbClass implements IUser
     public  $iniObj;
 
     function __construct() {
-//        $this->loadConfig();
         parent::__construct();
     }
 
@@ -44,11 +43,11 @@ class UserAccount extends dbClass implements IUser
     }
 
     public function get_user($id) {
-        parent::whereData(array("email"=>Helper::sanitize($email,'email')));
+        parent::whereData(array("id"=>Helper::sanitize($id,'email')));
         $this->email = parent::selectMultiTbl(array('column'=>array('email'), 'table'=>array($this->tableName)));
 
         if(!empty($this->email)) {
-            $this->user_id = array_shift($this->email);
+            $this->email = array_shift($this->email);
         }
         return $this->email;
     }
@@ -59,18 +58,12 @@ class UserAccount extends dbClass implements IUser
      * return  array list of user information
     */
     public function get_info_user($email, $pwd) {
-//        parent::whereData(array("email"=>$email));
         parent::whereData(array(
                           "email"=>Helper::sanitize($email,'email'),
                           "pwd"=>Helper::crypt_hash($pwd, self::$pwdType)
                          ));
         $result = parent::selectMultiTbl(array('column'=>array('user_id','email', 'ip', 'status'), 'table'=>array('user')));
 
-//        $this->iniObj = self::instantiate($result[0]);
-//        echo $this->iniObj->email;
-//        echo $hel->email;
-//        echo "<pre>";
-//        print_r($this->iniObj);
         return $result;
     }
 
@@ -109,7 +102,7 @@ class UserAccount extends dbClass implements IUser
     public function get_forgot_pwd($email, $code) {
         $this->get_id(Helper::sanitize($email,'email'));
 
-        if(!empty($code) && $this->chk_forgot_pwd($code)) {
+        if(!empty($code) && $this->chk_forgot_pwd(Helper::sanitize($code, 'string'))) {
             $this->data = array('forgotpass'=>'', 'pwd_temp'=>'');
             if ($this->save($this->user_id)) {
                 return "Your password has been successfully changed!";
@@ -171,7 +164,7 @@ class UserAccount extends dbClass implements IUser
     }
 
     private function chk_forgot_pwd($code) {
-        $result = parent::directQuery("SELECT forgotpass FROM user WHERE forgotpass='". Helper::sanitize($code, 'string') ."'");
+        $result = parent::directQuery("SELECT forgotpass FROM user WHERE forgotpass='". $code ."'");
 
         if(count($result)) {
             return true;
