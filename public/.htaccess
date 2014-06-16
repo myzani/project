@@ -1,0 +1,10 @@
+RewriteEngine On
+
+# Redirect external .php requests to extensionless url
+RewriteCond %{THE_REQUEST} ^(.+)\.php([#?][^\ ]*)?\ HTTP/
+RewriteRule ^(.+)\.php$ http://project.dev/$1 [R=301,L]
+
+# Resolve .php file for extensionless php urls
+RewriteRule ^([^/.]+)$ $1.php [L]
+
+Redirect /public/images/ http://project.dev/
