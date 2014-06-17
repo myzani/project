@@ -219,6 +219,9 @@ class dbClass{
 			case 'boolean':
 				$itemType = PDO::PARAM_BOOL;
 				break;
+            case 'object':
+                $itemType = PDO::PARAM_LOB;
+                break;
 			case 'NULL':
 				$itemType = PDO::PARAM_NULL;
 				break;

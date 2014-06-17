@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteRule ^project/ - [L]
+RewriteCond %{THE_REQUEST} public/
+RewriteRule ^public/ http://project.dev/$1 [R=301,L]
+RewriteCond %{REQUEST_URI} !public/
+RewriteRule ^(.*)$ /public/$1 [L]
+
+
+ErrorDocument 404 /error/file_404.php
