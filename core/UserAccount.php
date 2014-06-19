@@ -33,7 +33,7 @@ class UserAccount extends dbClass implements IUser
     }
 
     public function get_id($email) {
-        parent::whereData(array("email"=>Helper::sanitize($email,'email')));
+        parent::whereData(array("email"=>Helper::sanitize($email,'email'), "status"=>1), 'AND');
         $this->user_id = parent::selectMultiTbl(array('column'=>array('user_id'), 'table'=>array($this->tableName)));
 
         if(!empty($this->user_id)) {
@@ -43,7 +43,7 @@ class UserAccount extends dbClass implements IUser
     }
 
     public function get_user($id) {
-        parent::whereData(array("id"=>Helper::sanitize($id,'email')));
+        parent::whereData(array("id"=>Helper::sanitize($id,'email'), "status"=>1), 'AND');
         $this->email = parent::selectMultiTbl(array('column'=>array('email'), 'table'=>array($this->tableName)));
 
         if(!empty($this->email)) {
@@ -61,7 +61,7 @@ class UserAccount extends dbClass implements IUser
         parent::whereData(array(
                           "email"=>Helper::sanitize($email,'email'),
                           "pwd"=>Helper::crypt_hash($pwd, self::$pwdType)
-                         ));
+                         ), 'AND');
         $result = parent::selectMultiTbl(array('column'=>array('user_id','email', 'ip', 'status'), 'table'=>array('user')));
 
         return $result;
@@ -79,7 +79,9 @@ class UserAccount extends dbClass implements IUser
         return false;
     }
 
-    public function get_all_users() {
+    public function get_all_users($active = null) {
+        if($active)
+            parent::whereData(array('status'=>$active));
         return parent::selectMultiTbl(array('column'=>array('*'), 'table'=>array('user')));
     }
 
@@ -140,9 +142,9 @@ class UserAccount extends dbClass implements IUser
                 return 'Message could not be sent.';
             }
             // log this action
-            $msg  = "+Request to reset password (". $email .")". strftime('%m-%d-%Y %R', time());
-            $file = new ExternalFile(LOGS.DS.'client.txt', 'a+');
-            $file->fileHandler($msg);
+            $msg  = "Request to reset password (". $email .")";
+            Helper::log($msg, 'client.txt');
+
             return 'We have sent you a password reset. Please check your email.';
         }
     }

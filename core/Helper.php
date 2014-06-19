@@ -28,13 +28,43 @@ class Helper
         return $hashStr;
     }
 
-    public static function gen_rand_str($pwdLen = 15) {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    public static function gen_rand_str($pwdLen = 15, $opt = "both") {
+        switch($opt){
+            case 'numeric':
+                $characters = '0123456789'; break;
+            case 'alpha':
+                $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                break;
+            default:
+                $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                break;
+        }
+
         $output = '';
         for ($i = 0; $i < $pwdLen; $i++) {
             $output .= $characters[mt_rand(0, strlen($characters))];
         }
         return $output;
+    }
+
+    public function check_content_type($file) {
+        if(file_exists($file)){
+            if(function_exists("mime_content_type")){
+                $ftype = mime_content_type($this->path);
+            } else if(class_exists("finfo")) {
+                $finfo = new finfo(FILEINFO_MIME);
+                $type = $finfo->file($file);
+                $ftype = array_shift(explode(';', $type));
+            }
+            return $ftype;
+        }
+        return false;
+    }
+
+    public static function log($message, $file='client.txt') {
+        $msg  = "+". $message .' @ '. strftime('%m-%d-%Y %R', time());
+        $file = new ExternalFile(LOGS.DS.$file, 'a+');
+        $file->fileHandler($msg);
     }
 
     public static function mail_auth() {

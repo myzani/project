@@ -81,7 +81,7 @@ class dbClass{
 		$this->_query .= (!empty($this->_pid)) ? $this->_pid : '';
 		$this->_query .= $this->_orderStmt;
 		$stmt = $this->prepQuery();
-		$stmt = $this->bindParam($stmt, $this->_where);
+        $stmt = $this->bindParam($stmt, $this->_where);
 		$stmt->execute();
 		$result = $this->queryFetch($stmt);
 		return $result;
@@ -174,7 +174,7 @@ class dbClass{
 		// echo "<pre>";
 		// print_r($data);
 		// echo "</pre>";
-		 echo $this->_query . "<br />";
+//		 echo $this->_query . "<br />";
 //		 print_r($data);
 		// echo "Count: " . count($data) . "<br />";
 		// call method to prepare the query
